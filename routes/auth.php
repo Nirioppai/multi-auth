@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Staff\Auth\AuthenticatedSessionController as StaffAuth;
 use App\Http\Controllers\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Auth\EmailVerificationNotificationController;
 use App\Http\Controllers\Auth\EmailVerificationPromptController;
@@ -8,6 +9,7 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
+use App\Http\Controllers\Staff\StaffController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -53,4 +55,31 @@ Route::middleware('auth')->group(function () {
 
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
                 ->name('logout');
+});
+
+
+
+# Staff routes
+Route::prefix('/staff')->name('staff.')->group(function(){
+    Route::get('/login', [StaffAuth::class, 'create'])->middleware('guest:staff')->name('login');
+    Route::post('/login', [StaffAuth::class, 'store'])->middleware('guest:staff');
+
+    
+
+    Route::middleware('staff')->group(function(){
+        Route::get('/logout', [StaffAuth::class, 'destroy'])->name('logout');
+
+        Route::get('/dashboard', [StaffController::class,'index']);
+        Route::get('/create', [StaffController::class,'create'])->name('create');
+        Route::post('/store', [StaffController::class,'store'])->name('store');
+
+
+    });
+
+// Usage of Protected routes
+
+//   Route::get('/simple', function(){
+//     return 'Staff Simple';
+//   })->middleware('staff');
+  
 });
